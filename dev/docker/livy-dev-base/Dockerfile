@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM ubuntu:xenial
+FROM ubuntu:jammy
 
 # configure locale
 RUN apt-get update -qq > /dev/null && apt-get install -qq --yes --no-install-recommends \
@@ -23,7 +23,9 @@ RUN apt-get update -qq > /dev/null && apt-get install -qq --yes --no-install-rec
     locale-gen en_US.UTF-8
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
-    LC_ALL="en_US.UTF-8"
+    LC_ALL="en_US.UTF-8" \
+    TZ=US \
+    DEBIAN_FRONTEND=noninteractive
 
 # Install necessary dependencies for build/test/debug
 # Use `lsof -i -P -n` to find open ports
@@ -32,22 +34,21 @@ RUN apt-get install -qq \
     curl \
     git \
     libkrb5-dev \
-    maven \
-    openjdk-8-jdk \
-    python-dev \
-    python-pip \
+    python2-dev \
     python3-pip \
+    openjdk-8-jdk-headless \
+    r-base \
+    maven \
     software-properties-common \
     vim \
     wget \
     telnet \
     lsof
 
-# R 3.x install - ensure to add the signing key per https://cran.r-project.org/bin/linux/ubuntu/olderreleasesREADME.html
-RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/' && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
-    apt-get update && \
-    apt-get -qq install r-base
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 1
+
+RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py \
+    && python get-pip.py
 
 # Add build dependencies for python2
 # - First we upgrade pip because that makes a lot of things better
@@ -72,5 +73,11 @@ RUN python -m pip install -U "pip < 21.0" && \
 # Now do the same for python3
 RUN python3 -m pip install -U pip
 
+RUN apt remove -y openjdk-11-jre-headless
+
+#RUN cd /opt && wget "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip" && unzip apache-maven-3.9.9-bin.zip
+#ENV PATH="/opt/apache-maven-3.9.9/bin:$PATH"
+
 WORKDIR /workspace
+RUN git clone https://github.com/apache/incubator-livy.git
 
