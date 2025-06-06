@@ -114,6 +114,11 @@
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-hdfs</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
       <classifier>tests</classifier>
     </dependency>
 
@@ -307,6 +312,7 @@
             <SPARK_HOME>${project.build.directory}/${spark.bin.name}</SPARK_HOME>
             <LIVY_TEST_THRIFT_ENABLED>${livy.test.thrift.enabled}</LIVY_TEST_THRIFT_ENABLED>
             <PYSPARK_ROW_FIELD_SORTING_ENABLED>true</PYSPARK_ROW_FIELD_SORTING_ENABLED>
+            <PYSPARK_PYTHON>python3</PYSPARK_PYTHON>
           </environmentVariables>
           <systemProperties>
             <cluster.spec>${cluster.spec}</cluster.spec>
